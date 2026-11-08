@@ -8,10 +8,10 @@ import LatestOrderItem from "@/components/order/LatestOrderItem";
 
 export default function OrdersPage() {
      const url = '/orders/api'
-  const fetcher = () => fetch(url).then(res => res.json()).then(data => data)
+  const fetcher = () => fetch(url, { cache: 'no-store' }).then(res => res.json())
   const {data,isLoading} = useSWR<OrderWithProducts[]>(url, fetcher, {
-      refreshInterval: 60000,
-      revalidateOnFocus: false
+      refreshInterval: 5000,
+      revalidateOnFocus: true
   })
   if (isLoading) return <p className='text-center'>Cargando...</p>
   

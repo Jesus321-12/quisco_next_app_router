@@ -1,6 +1,10 @@
+"use client"
+
 import { OrderWithProducts } from "@/src/types"
 import { formatCurrency } from "@/src/utils"
 import { completeOrder } from "@/actions/complete-order-action"
+import { useSWRConfig } from "swr"
+import { toast } from "react-toastify"
 
 
 type OrderCardProps = {
@@ -8,8 +12,25 @@ type OrderCardProps = {
 }
 
 export default function OrderCard({ order} : OrderCardProps) {
+    const { mutate } = useSWRConfig()
 
-   
+    const handleCompleteOrder = async (formData: FormData) => {
+        const response = await completeOrder(formData)
+
+        if (response?.errors) {
+            response.errors.forEach((issue) => toast.error(issue.message))
+            return
+        }
+
+        if (response?.success) {
+            await Promise.all([
+                mutate('/admin/orders/api'),
+                mutate('/orders/api')
+            ])
+            toast.success('Orden marcada como completada')
+        }
+    }
+
     return (
         <section
             aria-labelledby="summary-heading"
@@ -36,7 +57,7 @@ export default function OrderCard({ order} : OrderCardProps) {
                 </div>
             </dl>
 
-            <form action={completeOrder}>
+            <form action={handleCompleteOrder}>
                 <input
                     type="hidden"
                     name="order_id"
