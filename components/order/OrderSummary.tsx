@@ -27,8 +27,7 @@ export default function OrderSummary() {
         result.error.issues.forEach((issue) => {
           toast.error(issue.message)
         })
-        toast.success('Pedido realizado correctamente')
-        clearOrder()
+        return
       }
     
      const response = await createOrder(data)
@@ -36,6 +35,12 @@ export default function OrderSummary() {
       response.errors.forEach((issue) => {
           toast.error(issue.message)
         })
+        return
+     }
+
+     if(response?.success){
+      toast.success('Pedido realizado correctamente')
+      clearOrder()
      }
   }
 
@@ -75,4 +80,3 @@ export default function OrderSummary() {
     </aside>
   )
 }
-
